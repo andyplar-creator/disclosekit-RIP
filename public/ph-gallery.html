@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PH Gallery — AI Disclosure Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { font-family: 'Inter', -apple-system, sans-serif; background: #e7e5e4; color: #1c1917; }
+  body { padding: 40px 20px; }
+
+  /* Slide container */
+  .slide {
+    width: 1270px;
+    height: 760px;
+    margin: 0 auto 40px auto;
+    background: #fff;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .slide-label {
+    position: absolute;
+    top: -30px; left: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #57534e;
+    background: #fef3c7;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ==== SLIDE 1: HERO ==== */
+  .s1 {
+    background: url('hero.png') no-repeat center center;
+    background-size: cover;
+  }
+  /* Fallback if hero.png missing */
+  .s1 .s1-fallback {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    color: white; text-align: center; padding: 80px;
+  }
+  .s1 .s1-fallback h1 { font-size: 60px; font-weight: 800; line-height: 1.1; margin-bottom: 30px; }
+  .s1 .s1-fallback p { font-size: 24px; opacity: 0.9; max-width: 900px; }
+  .s1 .s1-fallback small { display: block; margin-top: 40px; font-size: 18px; opacity: 0.7; }
+
+  /* ==== SLIDE 2: PROBLEM ==== */
+  .s2 {
+    background: #fafaf9;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 80px;
+  }
+  .s2 .badge {
+    display: inline-block; background: #fef2f2; color: #7f1d1d;
+    padding: 10px 20px; border-radius: 100px;
+    font-size: 16px; font-weight: 600;
+    margin-bottom: 40px;
+  }
+  .s2 .big-line {
+    font-size: 64px; font-weight: 800; line-height: 1.1;
+    text-align: center; max-width: 1100px;
+    margin-bottom: 50px;
+  }
+  .s2 .big-line .fine { color: #b91c1c; }
+  .s2 .big-line .date { color: #1c1917; }
+  .s2 .sub {
+    font-size: 24px; color: #57534e;
+    max-width: 900px; text-align: center; line-height: 1.4;
+  }
+  .s2 .footer {
+    position: absolute; bottom: 40px; left: 80px; right: 80px;
+    text-align: center; font-size: 14px; color: #78716c;
+    border-top: 1px solid #e7e5e4; padding-top: 20px;
+  }
+
+  /* ==== SLIDE 3: OUTPUT ==== */
+  .s3 {
+    display: grid; grid-template-columns: 1.1fr 1fr;
+    padding: 60px; gap: 50px;
+    background: #fafaf9;
+  }
+  .s3-left {
+    background: url('output.png') no-repeat center center;
+    background-size: contain;
+    background-color: white;
+    border: 1px solid #e7e5e4;
+    border-radius: 8px;
+  }
+  .s3-right {
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .s3-right .tag {
+    font-size: 13px; font-weight: 600; color: #1d4ed8;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .s3-right h2 { font-size: 44px; font-weight: 800; line-height: 1.1; margin-bottom: 28px; }
+  .s3-right .desc { font-size: 18px; color: #44403c; line-height: 1.5; margin-bottom: 32px; }
+  .s3-right ul { list-style: none; }
+  .s3-right ul li {
+    font-size: 17px; padding: 10px 0;
+    border-bottom: 1px solid #e7e5e4;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .s3-right ul li:last-child { border-bottom: none; }
+  .s3-right ul li::before {
+    content: '✓'; color: #15803d; font-weight: 800; font-size: 20px;
+  }
+
+  /* ==== SLIDE 4: 8 SYSTEM TYPES ==== */
+  .s4 {
+    display: flex; flex-direction: column; padding: 60px;
+    background: #fafaf9;
+  }
+  .s4 .title-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 45px; padding-bottom: 20px;
+    border-bottom: 1px solid #e7e5e4;
+  }
+  .s4 h2 { font-size: 42px; font-weight: 800; line-height: 1.1; max-width: 780px; }
+  .s4 .scope { font-size: 15px; color: #78716c; text-align: right; }
+  .s4 .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; flex: 1;
+  }
+  .s4 .item {
+    background: white; border: 1px solid #e7e5e4; border-radius: 12px;
+    padding: 24px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .s4 .item .icon { font-size: 40px; line-height: 1; }
+  .s4 .item .name { font-size: 18px; font-weight: 700; color: #1c1917; }
+  .s4 .item .clause {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: #1d4ed8; background: #eff6ff;
+    padding: 4px 10px; border-radius: 4px;
+    display: inline-block; align-self: flex-start;
+  }
+
+  /* ==== SLIDE 5: EMBED / CODE ==== */
+  .s5 {
+    padding: 60px;
+    background: #fafaf9;
+    display: flex; flex-direction: column;
+  }
+  .s5 .tag {
+    font-size: 13px; font-weight: 600; color: #1d4ed8;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .s5 h2 { font-size: 42px; font-weight: 800; line-height: 1.1; margin-bottom: 35px; max-width: 900px; }
+  .s5 .code-block {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 30px 36px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    line-height: 1.55;
+    flex: 1;
+    display: flex; flex-direction: column; justify-content: space-around;
+  }
+  .s5 .code-block .tag-row { color: #64748b; font-size: 13px; margin-bottom: 10px; }
+  .s5 .code-block .kw { color: #93c5fd; }
+  .s5 .code-block .str { color: #86efac; }
+  .s5 .code-block .attr { color: #fca5a5; }
+  .s5 .code-block .method { color: #c4b5fd; }
+
+  /* ==== SLIDE 6: LANGUAGES ==== */
+  .s6 {
+    padding: 60px;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    display: flex; flex-direction: column;
+  }
+  .s6 h2 {
+    font-size: 46px; font-weight: 800; line-height: 1.1;
+    margin-bottom: 30px; text-align: center;
+  }
+  .s6 .subline { font-size: 19px; color: #44403c; text-align: center; margin-bottom: 40px; }
+  .s6 .grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; flex: 1;
+  }
+  .s6 .lang {
+    background: white; border-radius: 10px; padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .s6 .lang .flag { font-size: 32px; line-height: 1; }
+  .s6 .lang .code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600; color: #1d4ed8;
+    text-transform: uppercase;
+  }
+  .s6 .lang .snippet { font-size: 12px; color: #44403c; line-height: 1.35; }
+
+  /* ==== SLIDE 7: PRICING ==== */
+  .s7 {
+    padding: 60px;
+    background: #fafaf9;
+    display: flex; flex-direction: column;
+  }
+  .s7 .tag {
+    font-size: 13px; font-weight: 600; color: #1d4ed8;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .s7 h2 { font-size: 42px; font-weight: 800; line-height: 1.1; margin-bottom: 12px; }
+  .s7 .lede { font-size: 18px; color: #57534e; margin-bottom: 35px; max-width: 900px; }
+  .s7 .tiers {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; flex: 1;
+  }
+  .s7 .tier {
+    background: white;
+    border: 1px solid #e7e5e4;
+    border-radius: 12px;
+    padding: 28px;
+    display: flex; flex-direction: column;
+  }
+  .s7 .tier.featured {
+    border: 2px solid #1d4ed8;
+    box-shadow: 0 0 0 6px rgba(29,78,216,0.08);
+    position: relative;
+  }
+  .s7 .tier .plan-name {
+    font-size: 17px; font-weight: 700; color: #1c1917;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .s7 .tier .badge {
+    background: #fef3c7; color: #78350f;
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 100px;
+  }
+  .s7 .tier .price {
+    margin: 14px 0 4px;
+    font-size: 40px; font-weight: 800; color: #1c1917;
+    line-height: 1;
+  }
+  .s7 .tier .price .per { font-size: 15px; font-weight: 500; color: #78716c; margin-left: 4px; }
+  .s7 .tier .audience {
+    font-size: 13px; color: #78716c;
+    margin-bottom: 18px;
+    min-height: 34px;
+  }
+  .s7 .tier ul { list-style: none; flex: 1; }
+  .s7 .tier ul li {
+    font-size: 14px; padding: 6px 0;
+    color: #1c1917; line-height: 1.3;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .s7 .tier ul li::before {
+    content: '✓'; color: #15803d; font-weight: 800; flex-shrink: 0;
+  }
+  .s7 .tier ul li.strong { font-weight: 600; }
+  .s7 .tier .cta {
+    background: #1d4ed8; color: white;
+    padding: 12px; border-radius: 8px;
+    font-weight: 600; font-size: 14px;
+    text-align: center; margin-top: 18px;
+  }
+  .s7 .tier.free .cta { background: white; color: #1c1917; border: 1px solid #e7e5e4; }
+  .s7 .footer-note {
+    font-size: 13px; color: #78716c; text-align: center;
+    margin-top: 18px;
+  }
+
+  /* Download helper */
+  .help {
+    max-width: 1270px; margin: 20px auto 40px;
+    padding: 24px; background: #fef3c7; border-radius: 8px;
+    font-size: 14px; line-height: 1.6;
+  }
+  .help h3 { font-size: 17px; margin-bottom: 8px; }
+  .help code { background: white; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+  @media print {
+    .help, .slide-label { display: none; }
+    .slide { margin: 0; box-shadow: none; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<div class="help">
+  <h3>📸 How to export 6 PNGs (Chrome DevTools method)</h3>
+  <ol style="margin-left: 20px;">
+    <li>Make sure <code>hero.png</code> and <code>output.png</code> are saved next to this HTML file (same folder).</li>
+    <li>Open Chrome DevTools: <code>Cmd+Option+I</code> (Mac) / <code>F12</code> (Win)</li>
+    <li>Go to <code>Elements</code> tab, find <code>&lt;section class="slide s1"&gt;</code></li>
+    <li>Right-click the element → <strong>"Capture node screenshot"</strong></li>
+    <li>PNG auto-downloads — exact 1270×760, perfect quality</li>
+    <li>Repeat for <code>s2</code>, <code>s3</code>, <code>s4</code>, <code>s5</code>, <code>s6</code>, <code>s7</code></li>
+  </ol>
+</div>
+
+<!-- ==== SLIDE 1: HERO ==== -->
+<section class="slide s1">
+  <span class="slide-label">s1 · Hero</span>
+  <!-- hero.png fills background via CSS. Fallback below in case image missing -->
+  <div class="s1-fallback" style="display: none;">
+    <h1>Generate EU AI Act Article 50 disclosures in seconds</h1>
+    <p>Pick your AI system type, industry, and language. Get compliant user-facing text, copy-paste HTML banner, and a compliance-file note — grounded in the exact Article 50 clauses.</p>
+    <small>Free 3/day · no signup · disclosekit.com</small>
+  </div>
+</section>
+
+<!-- ==== SLIDE 2: PROBLEM ==== -->
+<section class="slide s2">
+  <span class="slide-label">s2 · Problem</span>
+  <div class="badge">🛑 EU AI ACT ARTICLE 50</div>
+  <div class="big-line">
+    <span class="fine">€7.5M fine.</span>
+    <span class="date">Aug 2, 2026.</span>
+  </div>
+  <div class="sub">
+    Most EU SMEs aren't ready. Chatbots, synthetic content, deepfakes,<br>
+    and emotion/biometric AI all need user-facing disclosures — with audit trail.
+  </div>
+  <div class="footer">EU AI Act Article 50 · Regulation (EU) 2024/1689 · enforceable 2 August 2026</div>
+</section>
+
+<!-- ==== SLIDE 3: OUTPUT ==== -->
+<section class="slide s3">
+  <span class="slide-label">s3 · Output example</span>
+  <div class="s3-left"></div>
+  <div class="s3-right">
+    <div class="tag">GROUNDED IN REGULATION</div>
+    <h2>Every output cites the exact Article 50 clause.</h2>
+    <p class="desc">
+      User-facing text, short label, suggested placement, copy-paste HTML,
+      applicable clauses, and an audit-file note — ready to drop in your
+      compliance binder.
+    </p>
+    <ul>
+      <li>10 EU languages, industry-specific</li>
+      <li>Copy-paste HTML banner included</li>
+      <li>Audit-file note for your compliance binder</li>
+      <li>Automatic clause mapping: 50(1)/(2)/(3)/(4)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ==== SLIDE 4: 8 SYSTEM TYPES ==== -->
+<section class="slide s4">
+  <span class="slide-label">s4 · 8 system types</span>
+  <div class="title-row">
+    <h2>Whatever you're shipping, Article 50 has an obligation for it.</h2>
+    <div class="scope">8 system types · all 4 sub-clauses covered</div>
+  </div>
+  <div class="grid">
+    <div class="item"><span class="icon">💬</span><span class="name">Chatbot / AI assistant</span><span class="clause">Art. 50(1)</span></div>
+    <div class="item"><span class="icon">✍️</span><span class="name">Text generator</span><span class="clause">Art. 50(2)/(4)</span></div>
+    <div class="item"><span class="icon">🖼️</span><span class="name">Image generator</span><span class="clause">Art. 50(2)</span></div>
+    <div class="item"><span class="icon">🎥</span><span class="name">Video generator</span><span class="clause">Art. 50(2)</span></div>
+    <div class="item"><span class="icon">🔊</span><span class="name">Audio generator</span><span class="clause">Art. 50(2)</span></div>
+    <div class="item"><span class="icon">🎭</span><span class="name">Deepfake</span><span class="clause">Art. 50(4)</span></div>
+    <div class="item"><span class="icon">😐</span><span class="name">Emotion recognition</span><span class="clause">Art. 50(3)</span></div>
+    <div class="item"><span class="icon">🧬</span><span class="name">Biometric categorisation</span><span class="clause">Art. 50(3)</span></div>
+  </div>
+</section>
+
+<!-- ==== SLIDE 5: EMBED / CODE ==== -->
+<section class="slide s5">
+  <span class="slide-label">s5 · Embed &amp; API</span>
+  <div class="tag">SHIP COMPLIANT IN ONE COPY-PASTE</div>
+  <h2>HTML banner or REST API — you pick.</h2>
+  <div class="code-block">
+    <div class="tag-row">// Copy-paste HTML banner (rendered from generator output)</div>
+    <div>&lt;<span class="kw">div</span> <span class="attr">class</span>=<span class="str">"aria-ai-disclosure"</span> <span class="attr">role</span>=<span class="str">"note"</span>&gt;</div>
+    <div>&nbsp;&nbsp;This assistant uses AI. Responses may be inaccurate.</div>
+    <div>&nbsp;&nbsp;&lt;<span class="kw">a</span> <span class="attr">href</span>=<span class="str">"/ai-disclosure"</span>&gt;AI Disclosure →&lt;/<span class="kw">a</span>&gt;</div>
+    <div>&lt;/<span class="kw">div</span>&gt;</div>
+    <br>
+    <div class="tag-row">// Or via REST API (Pro tier)</div>
+    <div><span class="kw">POST</span> <span class="str">https://disclosekit.com/api/v1/disclosure</span></div>
+    <div><span class="kw">Authorization</span>: <span class="kw">Bearer</span> <span class="str">adk_...</span></div>
+    <div>{ <span class="attr">"systemType"</span>: <span class="str">"chatbot"</span>, <span class="attr">"language"</span>: <span class="str">"de"</span> }</div>
+  </div>
+</section>
+
+<!-- ==== SLIDE 6: LANGUAGES ==== -->
+<section class="slide s6">
+  <span class="slide-label">s6 · Languages</span>
+  <h2>10 EU languages, same one click.</h2>
+  <div class="subline">Localised disclosure text — no translation memory wrestling.</div>
+  <div class="grid">
+    <div class="lang"><div class="flag">🇬🇧</div><div class="code">EN</div><div class="snippet">"You are interacting with an AI system."</div></div>
+    <div class="lang"><div class="flag">🇵🇱</div><div class="code">PL</div><div class="snippet">"Kontaktujesz się z systemem AI."</div></div>
+    <div class="lang"><div class="flag">🇩🇪</div><div class="code">DE</div><div class="snippet">"Sie interagieren mit einem KI-System."</div></div>
+    <div class="lang"><div class="flag">🇫🇷</div><div class="code">FR</div><div class="snippet">"Vous interagissez avec un système d'IA."</div></div>
+    <div class="lang"><div class="flag">🇪🇸</div><div class="code">ES</div><div class="snippet">"Está interactuando con un sistema de IA."</div></div>
+    <div class="lang"><div class="flag">🇮🇹</div><div class="code">IT</div><div class="snippet">"Stai interagendo con un sistema di IA."</div></div>
+    <div class="lang"><div class="flag">🇳🇱</div><div class="code">NL</div><div class="snippet">"U communiceert met een AI-systeem."</div></div>
+    <div class="lang"><div class="flag">🇨🇿</div><div class="code">CS</div><div class="snippet">"Komunikujete s AI systémem."</div></div>
+    <div class="lang"><div class="flag">🇸🇪</div><div class="code">SV</div><div class="snippet">"Du interagerar med ett AI-system."</div></div>
+    <div class="lang"><div class="flag">🇵🇹</div><div class="code">PT</div><div class="snippet">"Está a interagir com um sistema de IA."</div></div>
+  </div>
+</section>
+
+<!-- ==== SLIDE 7: PRICING ==== -->
+<section class="slide s7">
+  <span class="slide-label">s7 · Pricing</span>
+  <div class="tag">TRANSPARENT · SELF-SERVE</div>
+  <h2>Free tier forever. Paid when you're ready to ship.</h2>
+  <p class="lede">
+    No demos, no sales calls, no minimum contract. Cancel anytime via Stripe Customer Portal.
+  </p>
+  <div class="tiers">
+    <div class="tier free">
+      <div class="plan-name">Free</div>
+      <div class="price">€0<span class="per">/forever</span></div>
+      <div class="audience">For one-off compliance needs</div>
+      <ul>
+        <li>3 generations per day</li>
+        <li>8 AI system types</li>
+        <li>10 EU languages</li>
+        <li>Copy-paste HTML banner</li>
+        <li>Article 50 clause citations</li>
+      </ul>
+      <div class="cta">Try it now →</div>
+    </div>
+
+    <div class="tier featured">
+      <div class="plan-name">Pro <span class="badge">MOST POPULAR</span></div>
+      <div class="price">€29<span class="per">/mo</span></div>
+      <div class="audience">For teams shipping AI features to EU users</div>
+      <ul>
+        <li class="strong">Unlimited generations</li>
+        <li>REST API (1,000 calls/mo)</li>
+        <li>Signed compliance PDF export</li>
+        <li>Code of Practice update notifications</li>
+        <li>Email support (48h SLA)</li>
+      </ul>
+      <div class="cta">Start Pro →</div>
+    </div>
+
+    <div class="tier">
+      <div class="plan-name">Team</div>
+      <div class="price">€99<span class="per">/mo</span></div>
+      <div class="audience">For agencies &amp; multi-product SaaS</div>
+      <ul>
+        <li>Everything in Pro</li>
+        <li>10,000 API calls/mo</li>
+        <li>5 seats</li>
+        <li>CI/CD webhook (AI Act updates)</li>
+        <li>Priority support (24h SLA)</li>
+      </ul>
+      <div class="cta">Start Team →</div>
+    </div>
+  </div>
+  <div class="footer-note">
+    Prices shown include VAT where applicable · Cancel anytime · Secure checkout by Stripe
+  </div>
+</section>
+
+</body>
+</html>

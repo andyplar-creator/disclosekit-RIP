@@ -1,0 +1,10 @@
+# Copy to .dev.vars for local development (wrangler loads automatically)
+# DO NOT COMMIT .dev.vars
+
+# Default provider is OpenAI (set LLM_PROVIDER in wrangler.jsonc).
+# You only need ONE of OPENAI_API_KEY or ANTHROPIC_API_KEY — whichever matches LLM_PROVIDER.
+OPENAI_API_KEY=sk-proj-REPLACE_ME
+# ANTHROPIC_API_KEY=sk-ant-REPLACE_ME
+
+STRIPE_SECRET_KEY=sk_test_REPLACE_ME
+STRIPE_WEBHOOK_SECRET=whsec_REPLACE_ME

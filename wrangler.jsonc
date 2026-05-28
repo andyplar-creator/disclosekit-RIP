@@ -1,0 +1,47 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ai-disclosure-kit",
+  "main": "src/worker.ts",
+  "compatibility_date": "2025-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Observability for free-tier error logs
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+
+  // D1 for users/subscriptions/usage_logs
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ai_disclosure_db",
+      "database_id": "REPLACE_WITH_YOUR_D1_DB_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // KV for anonymous free-tier rate limiting (count by IP+day)
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMIT",
+      "id": "REPLACE_WITH_YOUR_KV_ID"
+    }
+  ],
+
+  // Public env vars (non-secret)
+  "vars": {
+    "LLM_PROVIDER": "openai",                    // 'openai' (default) | 'anthropic'
+    "FREE_DAILY_LIMIT": "3",
+    "SITE_URL": "https://disclosekit.com",
+    "PRICE_ID_PRO": "price_REPLACE_ME_PRO",
+    "PRICE_ID_TEAM": "price_REPLACE_ME_TEAM",
+    "STRIPE_PUBLISHABLE_KEY": "pk_test_REPLACE_ME"
+  }
+
+  // Secrets (set via `wrangler secret put`):
+  //   OPENAI_API_KEY       (required if LLM_PROVIDER=openai — the default)
+  //   ANTHROPIC_API_KEY    (required if LLM_PROVIDER=anthropic)
+  //   STRIPE_SECRET_KEY
+  //   STRIPE_WEBHOOK_SECRET
+}

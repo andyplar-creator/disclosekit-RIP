@@ -1,0 +1,21 @@
+{
+  "name": "ai-disclosure-kit",
+  "version": "0.1.0",
+  "description": "Self-serve EU AI Act Article 50 compliance toolkit. Generate compliant AI disclosures, chatbot banners, and content labels.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types",
+    "db:migrate:local": "wrangler d1 migrations apply ai_disclosure_db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply ai_disclosure_db --remote",
+    "db:exec:local": "wrangler d1 execute ai_disclosure_db --local --command",
+    "seo:gen": "node scripts/gen-seo-pages.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250416.0",
+    "typescript": "^5.4.5",
+    "wrangler": "^3.90.0"
+  }
+}
