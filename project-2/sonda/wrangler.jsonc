@@ -1,0 +1,46 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sonda",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Logi bledow w panelu Cloudflare (darmowy plan)
+  "observability": { "enabled": true },
+
+  // Baza D1. Po `npx wrangler d1 create sonda_db --jurisdiction eu` wklej tutaj zwrocony database_id.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sonda_db",
+      "database_id": "REPLACE_WITH_YOUR_D1_DB_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Zmienne jawne (nie sa sekretami). Uzupelnij przed wdrozeniem.
+  "vars": {
+    "SITE_URL": "https://REPLACE_WITH_YOUR_ADDRESS",
+    "DEFAULT_EXPERIMENT": "zamowienia-z-maila",
+    // Slugi publicznych eksperymentow, po przecinku. Puste = nic nie jest publiczne (strone widzisz tylko Ty, po zalogowaniu).
+    // Zostaw puste az do kroku "upublicznij strone" w docs/02-WDROZENIE.md.
+    "LIVE_EXPERIMENTS": "",
+    // Slugi eksperymentow z polem "wklej wlasna wiadomosc" (demo na zywo, wymaga ANTHROPIC_API_KEY). Puste = same gotowe przyklady.
+    "LIVE_PASTE_EXPERIMENTS": "",
+    "COMPANY_NAME": "PLAR Sp. z o.o.",
+    "COMPANY_NIP": "5222940634",
+    "COMPANY_CITY": "Warszawa",
+    "CONTACT_EMAIL": "your-business@example.com",
+    "DEMO_MODEL": "claude-opus-5-5",
+    "DEMO_DAILY_CAP": "300"
+  }
+
+  // Sekrety (ustawiane poleceniem `npx wrangler secret put NAZWA`, nigdy w tym pliku):
+  //   ADMIN_TOKEN            haslo do panelu, co najmniej 24 znaki          (wymagane)
+  //   VISITOR_SALT           losowy ciag do liczenia odwiedzin, 16+ znakow  (wymagane)
+  //   ANTHROPIC_API_KEY      klucz do demo na zywo                          (opcjonalne)
+  //   STRIPE_SECRET_KEY      klucz Stripe                                   (opcjonalne, razem z nastepnym)
+  //   STRIPE_WEBHOOK_SECRET  sekret webhooka Stripe                         (opcjonalne, razem z poprzednim)
+  //   NOTIFY_WEBHOOK_URL     adres, na ktory Sonda wysle krotkie powiadomienie o nowym zgloszeniu lub wplacie
+  //                          (opcjonalne; np. webhook Slacka, Discorda albo ntfy.sh; bez danych osobowych w tresci)
+}

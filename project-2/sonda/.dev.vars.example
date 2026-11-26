@@ -1,0 +1,19 @@
+# Skopiuj ten plik jako .dev.vars (do pracy lokalnej). NIE commituj .dev.vars.
+# Wartosci ponizej sa przykladowe i dzialaja tylko lokalnie.
+
+ADMIN_TOKEN=lokalne-haslo-do-panelu-zmien-mnie-123
+VISITOR_SALT=lokalna-sol-do-liczenia-odwiedzin
+SITE_URL=http://localhost:8787
+
+# Odkomentuj, zeby strona byla publiczna lokalnie (bez logowania do panelu):
+# LIVE_EXPERIMENTS=zamowienia-z-maila
+
+# Opcjonalne. Bez klucza strona pokazuje gotowy przyklad zamiast demo na zywo.
+# ANTHROPIC_API_KEY=sk-ant-REPLACE_ME
+
+# Opcjonalne, zawsze oba naraz. Bez nich dziala formularz zgloszenia z opcja faktury pro forma (przycisk platnosci jest ukryty).
+# STRIPE_SECRET_KEY=sk_test_REPLACE_ME
+# STRIPE_WEBHOOK_SECRET=whsec_REPLACE_ME
+
+# Opcjonalne. Adres, na ktory Sonda wysle krotkie powiadomienie o nowym zgloszeniu lub wplacie.
+# NOTIFY_WEBHOOK_URL=https://REPLACE_ME
