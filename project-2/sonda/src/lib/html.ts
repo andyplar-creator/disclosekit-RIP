@@ -67,7 +67,11 @@ ol{color:var(--muted);padding-left:20px;margin:0}
 ol li{padding:3px 0}
 select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);font:400 14px/1.3 inherit;padding:7px 9px}
 .btn.small{padding:8px 12px;font-size:14px}
-form.rowform{display:flex;gap:8px;align-items:center}
+form.rowform{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-width:150px}
+form.rowform select{max-width:170px}
+main h2{margin-top:38px}
+main .wrap>h2:first-child,main .wrap>h1+h2{margin-top:0}
+.tablewrap{margin-bottom:6px}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}

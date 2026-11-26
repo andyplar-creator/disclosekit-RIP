@@ -1,6 +1,6 @@
 # Skrót dowodów po dwóch rundach researchu (stan: 2026-11-26)
 
-Ten plik streszcza `01-sweep/` (12 soczewek, ok. 130 pomysłów) i `02-deep-dive/` (8 finalistów).
+Ten plik streszcza `01-sweep/` (12 soczewek, 189 pozycji: 22 kandydatów i 167 odrzuconych, część się powtarza) i `02-deep-dive/` (8 finalistów).
 Służy jako wejście do decyzji o projekcie #2. Liczby mają źródła w dossier; tu są tylko wnioski.
 
 ## 1. Ograniczenia researchu (czytaj najpierw)

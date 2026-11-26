@@ -6,9 +6,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod';
 import type { Env, OrderExtraction } from '../types';
-
-export const DEFAULT_DEMO_MODEL = 'claude-opus-5-5';
-export const MAX_DEMO_INPUT_CHARS = 6000;
+import { DEFAULT_DEMO_MODEL, MAX_DEMO_INPUT_CHARS } from './demo-config';
 
 /** Modele, dla ktorych API obsluguje serwerowy fallback po odmowie klasyfikatora bezpieczenstwa. */
 const MODELS_WITH_SERVER_FALLBACK = new Set(['claude-opus-5-5', 'claude-opus-5', 'claude-sonnet-5-5', 'claude-fable-5-2', 'claude-fable-5-1']);
@@ -42,10 +40,6 @@ Rules:
 export type DemoResult =
   | { ok: true; order: OrderExtraction; model: string }
   | { ok: false; reason: 'not_configured' | 'too_long' | 'empty' | 'refused' | 'truncated' | 'bad_output' | 'rate_limited' | 'api_error' };
-
-export function demoIsConfigured(env: Env): boolean {
-  return Boolean(env.ANTHROPIC_API_KEY);
-}
 
 export async function extractOrder(env: Env, text: string): Promise<DemoResult> {
   if (!env.ANTHROPIC_API_KEY) return { ok: false, reason: 'not_configured' };

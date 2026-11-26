@@ -3,6 +3,10 @@
 
 ADMIN_TOKEN=lokalne-haslo-do-panelu-zmien-mnie-123
 VISITOR_SALT=lokalna-sol-do-liczenia-odwiedzin
+SITE_URL=http://localhost:8787
+
+# Odkomentuj, zeby strona byla publiczna lokalnie (bez logowania do panelu):
+# LIVE_EXPERIMENTS=zamowienia-z-maila
 
 # Opcjonalne. Bez klucza strona pokazuje gotowy przyklad zamiast demo na zywo.
 # ANTHROPIC_API_KEY=sk-ant-REPLACE_ME

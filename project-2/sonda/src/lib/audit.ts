@@ -9,7 +9,7 @@
 import { EXPERIMENTS, statusOf, validateExperiment } from '../experiments';
 import type { Env } from '../types';
 import { countTestLeads, deleteTestLeads, insertLead, tableExists, timestampRange } from './db';
-import { DEFAULT_DEMO_MODEL, demoIsConfigured } from './demo';
+import { DEFAULT_DEMO_MODEL, demoIsConfigured } from './demo-config';
 import { looksLikeUnixSeconds } from './pure';
 import { adminIsConfigured } from './session';
 import { isLiveKey } from './stripe';

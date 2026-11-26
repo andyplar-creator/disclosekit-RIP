@@ -24,7 +24,7 @@ import {
   upsertAdReport,
   visitorCameFromAd,
 } from './lib/db';
-import { demoIsConfigured, extractOrder, MAX_DEMO_INPUT_CHARS } from './lib/demo';
+import { demoIsConfigured, MAX_DEMO_INPUT_CHARS } from './lib/demo-config';
 import { htmlHeaders, newNonce, page } from './lib/html';
 import {
   cleanText,
@@ -385,6 +385,8 @@ async function handleDemo(c: Ctx, slug: string): Promise<Response> {
   const global = await hitRateLimit(c.env.DB, 'demo:global', DAY, cap, c.now);
   if (!global.allowed) return json({ error: 'rate_limited' }, 429);
 
+  // Biblioteka Anthropic laduje sie dopiero tutaj, wiec nie spowalnia zwyklych wejsc na strone.
+  const { extractOrder } = await import('./lib/demo');
   const result = await extractOrder(c.env, text);
   if (!result.ok) {
     const status = result.reason === 'too_long' ? 413 : result.reason === 'rate_limited' ? 429 : 502;
