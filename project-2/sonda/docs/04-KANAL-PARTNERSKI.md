@@ -36,10 +36,12 @@ To wymaga Twojej decyzji o poluzowaniu reguły „zero outboundu".
 
 ## Bramki
 
-| Kiedy | GO | NO-GO |
+Dzień 30 to punkt kontrolny, nie werdykt. Werdykt zapada w dniu 90.
+
+| Kiedy | Idzie zgodnie z planem, gdy | Co robić w przeciwnym razie |
 |---|---|---|
-| Dzień 30 | Rozmowa z klientem odbyta, 8–10 wiadomości wysłanych, co najmniej 3 odpowiedzi. | 0 poleceń i mniej niż 3 odpowiedzi: zmień listę adresatów albo treść, jeszcze nie rezygnuj. |
-| Dzień 90 | 1 podpisany płatny pilotaż lub klient z polecenia albo od partnera; albo 2 partnerów, z których każdy pokazał ofertę co najmniej 2 swoim klientom. | 10 firm zapytanych, mniej niż 2 rozmowy, 0 poleceń: kanał zamknięty. PLAR Orders zostaje aktywem jednego klienta. |
+| Dzień 30 (kontrola) | Rozmowa z klientem odbyta, 8–10 wiadomości wysłanych, co najmniej 3 odpowiedzi. | 0 poleceń i mniej niż 3 odpowiedzi: zmień listę adresatów albo treść wiadomości. Jeszcze nie rezygnujesz. |
+| Dzień 90 (werdykt) | **GO:** 1 podpisany płatny pilotaż lub klient z polecenia albo od partnera; albo 2 partnerów, z których każdy pokazał ofertę co najmniej 2 swoim klientom. | **NO-GO:** 10 firm zapytanych, mniej niż 2 rozmowy, 0 poleceń. Kanał zamknięty. PLAR Orders zostaje aktywem jednego klienta. |
 
 Sufit pojemności: nie bierz kolejnego klienta, dopóki łączna obsługa przekracza 4 godziny tygodniowo.
 
@@ -54,12 +56,14 @@ Twoja decyzja. Zasady, które wyszły z researchu:
 - Na start wystarczy e-mail z warunkami. Żadnej wyłączności ani umów dystrybucyjnych.
 - Obietnica dla partnera: nie idziesz do jego klienta bokiem z niższą ceną.
 
-Konkretne widełki zaproponowane przez sędziego są w prywatnym raporcie, nie w tym repozytorium:
-to pozycja negocjacyjna.
+Konkretne widełki zaproponowane przez sędziego celowo nie trafiły do repozytorium, bo to Twoja pozycja
+negocjacyjna. Są w prywatnym raporcie z tej sesji (strona „Projekt 2 — raport", sekcja o kanale partnerskim).
 
 ## Szkice wiadomości
 
 Popraw na własny głos. Wszystkie fakty poniżej pochodzą z plar.ai/orders; niczego nie dopisuj na wyrost.
+Na pokazach używaj przykładowych zamówień. Prawdziwe zamówienia klienta referencyjnego pokazujesz tylko za jego
+zgodą i po zamazaniu danych. W pierwszym szkicu wstaw nazwę programu, na którym klient naprawdę pracuje.
 
 ### Do firmy serwisującej ERP (po przedstawieniu przez klienta)
 
@@ -75,7 +79,7 @@ Popraw na własny głos. Wszystkie fakty poniżej pochodzą z plar.ai/orders; ni
 > prosty: Wy znacie klienta i jego program, ja dostarczam i utrzymuję PLAR Orders, a Wy macie z tego stały
 > udział, dopóki klient płaci.
 >
-> Czy znajdzie Pan/Pani 20 minut w przyszłym tygodniu? Pokażę system na prawdziwych zamówieniach i powiem
+> Czy znajdzie Pan/Pani 20 minut w przyszłym tygodniu? Pokażę system na przykładowych zamówieniach i powiem
 > wprost, czego nie robi.
 >
 > [podpis]
@@ -105,7 +109,7 @@ Popraw na własny głos. Wszystkie fakty poniżej pochodzą z plar.ai/orders; ni
 > Dzień dobry,
 >
 > prowadzę PLAR Sp. z o.o. Oferuję hurtowniom system, który czyta zamówienia z maili i SMS-ów i przygotowuje je
-> do zatwierdzenia przez operatora. Część moich odbiorców pracuje na Subiekcie.
+> do zatwierdzenia przez operatora. Kieruję go między innymi do firm pracujących na Subiekcie.
 >
 > Chciałbym zapytać o warunki umieszczenia rozwiązania w katalogu „Rozwiązania partnerskie":
 > czy wymagany jest status partnera, jakie są wymagania techniczne (np. Sfera) i czy wpis jest płatny.

@@ -35,6 +35,10 @@ Służy jako wejście do decyzji o projekcie #2. Liczby mają źródła w dossie
 2. **Substytucja przez darmowy czat AI zabija także liderów**, nie tylko nowych (przykład: bankstatementconverter.com).
 3. **Stawki bazowe są niskie.** W próbach 3,5-5 tys. projektów ze zweryfikowanym przychodem mediana to ok. 136-169 USD
    miesięcznie; mediana wzrostu miesiąc do miesiąca to 0%. Realistyczny pierwszy rok nowego mikro-produktu: 0-500 USD/mies.
+   (ostatnia liczba to mój szacunek). Źródła median:
+   https://www.indiehackers.com/post/i-analyzed-5-079-stripe-verified-startups-f0f6bd053f ,
+   https://bigideasdb.com/trustmrr-saas-revenue-benchmarks-2026 ,
+   https://bigideasdb.com/state-of-indie-saas-revenue-2026
 4. **Sklepy z aplikacjami to jedyny kanał działający bez publiczności i outboundu, ale są rynkiem efektywnym**:
    tam, gdzie jest popyt, lider ma dobre oceny; tam, gdzie lider jest słaby, popytu nie ma.
 5. **Strony informacyjne umierają przez AI Overviews**; strony transakcyjne tracą mniej.
@@ -52,8 +56,11 @@ Co research mówi o samoobsługowej wersji ("PLAR Orders Lite", 199-399 zł/mies
 - za: konkurenci z cennikami (Ordify, CStore 450-990 zł/mies., agencje 8-22 tys. zł za wdrożenie) - czyli hurtownie
   za to płacą. **Korekta po rundzie sędziów:** funkcja zamówień z maila przez AI jest u Ordify dopiero w planie Pro
   za 949 zł netto/mies. (plan Starter za 279 zł jej nie ma), a łącznik do ERP od planu za 1 259 zł. Sprawdził to jeden
-  sędzia, drugi nie zdołał potwierdzić; zweryfikuj na ordify.pl. Jeśli to prawda, 800 zł/mies. jest już poniżej
-  najbliższego konkurenta; mocna odpowiedź na regułę substytucji (czat nie zna kartoteki
+  sędzia, drugi nie zdołał potwierdzić; zweryfikuj na ordify.pl. Jeśli to prawda, sam abonament 800 zł/mies. jest
+  poniżej najbliższego konkurenta. Uwaga z recenzji: w pierwszym roku klient płaci Ci więcej niż tam, bo dochodzi
+  wdrożenie (4 900 + 12 x 800 = 14 500 zł wobec 12 x 949 = 11 388 zł netto, o ile Ordify nie pobiera opłaty
+  wdrożeniowej, czego nie sprawdziłem). Przewaga cenowa zaczyna się więc dopiero w drugim roku;
+  mocna odpowiedź na regułę substytucji (czat nie zna kartoteki
   towarów, nie siedzi na skrzynce, nie odda pliku dla Subiekta);
 - przeciw: wolumen fraz zakupowych niezweryfikowany i prawdopodobnie mały; brak sklepu z aplikacjami;
   szacowane 3-6 h wsparcia tygodniowo przy kilkunastu klientach (powyżej limitu pasywności);
@@ -65,7 +72,7 @@ Co research mówi o samoobsługowej wersji ("PLAR Orders Lite", 199-399 zł/mies
 |---|---|
 | Wpis "My Business Is Dying" założyciela Bank Statement Converter | potwierdzony przez agregator (zeli.app, 28.08.2026): przychód -24% od lutego, nowi subskrybenci spadli ze 191 do 45 miesięcznie; wśród przyczyn czaty AI i mocniejszy konkurent. Oryginału na blogu nie otworzyłem. |
 | Zasada Shopify "10 instalacji przed kolejną aplikacją" | potwierdzona w oficjalnym changelogu Shopify ("build, grow, then expand"): każda istniejąca aplikacja musi mieć co najmniej 10 instalacji na pełnopłatnych sklepach; aplikacje z zerem instalacji po 6 miesiącach są usuwane. |
-| Cięcia Funduszu Pracy | potwierdzone: 2,14 mld zł dla urzędów pracy w 2026 r., o 1,5 mld zł mniej niż w 2025 r. (Gazeta Prawna / Forsal). Liczb na 2027 r. nie znalazłem. |
+| Cięcia Funduszu Pracy | potwierdzone: 2,14 mld zł dla urzędów pracy w 2026 r., o 1,5 mld zł mniej niż w 2025 r. (Gazeta Prawna / Forsal). Na 2027 r.: według Związku Powiatów Polskich Minister Finansów zamroził limit wydatków Funduszu Pracy na poziomie 2026 r. (link w dossier `02-deep-dive/pup-grant-application-configurator.md`); ostatecznego planu finansowego na 2027 r. nie widziałem. |
 | Mediana przychodu solo-projektów | analizy "986 startupów, mediana 445 USD" nie udało mi się odnaleźć ponownie. Większe próby (3 478-5 079 projektów) dają medianę 136-169 USD/mies. Używam tych niższych liczb. |
 
 ## 6. Opcje na stole

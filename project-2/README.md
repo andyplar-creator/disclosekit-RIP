@@ -4,7 +4,7 @@ Robocza przestrzeń projektu, który przychodzi po `disclosekit` (patrz `../READ
 Powstała zgodnie z regułami R1–R4 z `LESSONS.md`: najpierw popyt i dystrybucja, potem kod.
 
 > **Uwaga:** to repozytorium jest publiczne. Wszystko w tym katalogu widzi każdy, także klienci i konkurencja.
-> Przed startem przenieś `project-2/` do prywatnego repozytorium.
+> Przed startem przenieś `project-2/` do prywatnego repozytorium (krok 0 w `sonda/docs/02-WDROZENIE.md`).
 
 ## Zacznij tutaj
 
@@ -19,7 +19,7 @@ dla PLAR Orders (polecenia i partnerzy wdrożeniowi), z tanim testem reklam obok
 |---|---|
 | `DECYZJA.md` | Decyzja i plan. |
 | `sonda/` | Gotowy do wdrożenia zestaw do testu reklam jako kanału wejściowego: strona, formularz, pomiar, panel. Instrukcje w `sonda/docs/`. |
-| `research/01-sweep/` | Pierwsze przeczesanie rynku: 12 soczewek, 189 pozycji, źródła. |
+| `research/01-sweep/` | Pierwsze przeczesanie rynku: 12 soczewek, 189 pozycji (ok. 35 odrzuconych bez osobnego wyszukiwania), źródła. |
 | `research/02-deep-dive/` | Pogłębiona weryfikacja 8 finalistów: 2 martwych, 6 słabych. |
 | `research/03-decision/` | Skrót dowodów i opinie trzech niezależnych sędziów. |
 

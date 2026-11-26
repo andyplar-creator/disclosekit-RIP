@@ -4,12 +4,12 @@ Stan na 2026-11-26. Ten plik zastępuje czytanie całego researchu. Dowody są w
 
 ## Werdykt w trzech zdaniach
 
-1. **Żaden nowy produkt nie zasłużył na budowę.** Z 12 soczewek wyszło 189 pozycji (22 kandydatów i 167 odrzuconych;
-   część się powtarza, kilkanaście to „nie zdążyłem zbadać"). Ośmiu finalistów dostało pogłębioną weryfikację:
-   2 martwych, 6 słabych.
+1. **Żaden nowy produkt nie zasłużył na budowę.** Z 12 soczewek wyszło 189 pozycji: 22 kandydatów i 167 odrzuconych.
+   Uczciwie: ok. 35 z tych 167 skreśliłem bez osobnego wyszukiwania (powtórki albo brak czasu w limicie),
+   więc „odrzucone" nie zawsze znaczy „zbadane". Ośmiu finalistów dostało pogłębioną weryfikację: 2 martwych, 6 słabych.
 2. **Twój najlepszy „w miarę pasywny" dochód już istnieje i nazywa się PLAR Orders.** Jeden dodatkowy klient to
    4 900 zł + 12 × 800 zł = 14 500 zł w pierwszym roku. Mediana zweryfikowanego przychodu solo-projektów to
-   136–169 USD miesięcznie (próby 3,5–5 tys. projektów), przy medianie wzrostu 0%.
+   136–169 USD miesięcznie (próby 3,5–5 tys. projektów, źródła na końcu pliku), przy medianie wzrostu 0%.
 3. **Wąskim gardłem jest kanał sprzedaży, a nie produkt.** Projekt #2 to więc znalezienie kanału dla PLAR Orders:
    najpierw polecenia i partnerzy wdrożeniowi, obok tani test reklam. Nie nowy kod.
 
@@ -81,16 +81,29 @@ dla jednego klienta, a ja nie znalazłem niczego lepszego.
 
 Narzędzie jest gotowe: `sonda/`. Strona sprzedaje istniejący PLAR Orders, z Twoim prawdziwym cennikiem i referencją.
 Sygnały: zgłoszenie firmy (firma, program, liczba zamówień) i opcjonalny płatny pilotaż.
+Uwaga: część treści strony to nowe obietnice, których na plar.ai/orders nie ma (m.in. płatny pilotaż, odpowiedzi
+w sekcji pytań, trzy ręcznie przygotowane przykłady). Są oznaczone słowem `DECYZJA` i czekają na Twoje „tak" albo skreślenie.
 
 | Parametr | Wartość | Skąd |
 |---|---|---|
-| Minimalna próba | 60 unikalnych wejść z reklam | poniżej tego zero zgłoszeń nic nie znaczy |
+| Minimalna próba | 60 unikalnych wejść z reklam | poniżej tego panel nie mówi nic |
 | Koniec testu | 200 wejść albo 28 dni | sędziowie: 60–200 |
-| Budżet | do 300 EUR; przy 100 EUR przyjmij z góry, że werdyktu może nie być | rachunek wyżej |
-| GO | 1 opłacony pilotaż od nieznanej firmy ALBO 3 prawdziwe firmy, z których co najmniej 1 przysłała dane lub odbyła rozmowę | synteza trzech opinii |
-| NO-GO | 60+ wejść i ani jednej prawdziwej firmy; albo 200 wejść i najwyżej jedna | jw. |
-| Co znaczy NO-GO | „Google Ads nie jest kanałem", a nie „PLAR Orders nie ma popytu" | |
+| Budżet | do 300 EUR. Do 200 wejść dojdziesz w nim tylko przy stawce do ok. 6 zł za kliknięcie; przy wyższej test może dać GO, ale nie da NO-GO | rachunek w `sonda/docs/01-BRAMKI.md` |
+| GO | 1 opłacony pilotaż od firmy z reklamy (kartą albo przelewem na fakturę pro forma) ALBO 3 prawdziwe firmy, z których co najmniej 1 przysłała dane lub odbyła rozmowę | synteza trzech opinii |
+| Nierozstrzygnięte | 60–199 wejść bez GO | recenzja kodu, patrz niżej |
+| NO-GO | dopiero 200 wejść potwierdzonych w Google Ads i najwyżej 1 prawdziwa firma; nigdy, gdy coś czeka na Twoją ocenę | recenzja kodu, patrz niżej |
+| Co znaczy NO-GO | „reklamy w wyszukiwarce nie są kanałem, który da się tanio potwierdzić", a nie „PLAR Orders nie ma popytu" | |
 | Kiedy NIE puszczać reklam | 15 grudnia – 10 stycznia (szczyt sezonu i inwentaryzacje u hurtowni; to wniosek, nie dane) | sędziowie |
+
+**Dlaczego NO-GO dopiero przy 200 wejściach.** Pierwsza wersja ogłaszała NO-GO już po 60 wejściach bez zgłoszeń.
+Recenzja kodu słusznie to podważyła: jeśli naprawdę 1,1% klikających zgłasza firmę, to przy 60 wejściach zero
+zgłoszeń zdarza się w ok. 52% prób. To rzut monetą, nie werdykt.
+
+**Ile wart jest NO-GO przy 200 wejściach (rachunek, nie pomiar).** Wynik „najwyżej 1 firma na 200 wejść" zdarza się
+w ok. 9% prób, jeśli prawdziwa konwersja wynosi 2%, i w ok. 35% prób, jeśli wynosi 1,1%. NO-GO znaczy więc
+„konwersja jest najpewniej poniżej 2%", a nie „popytu nie ma". Druga strona tego samego rachunku: klient jest wart
+14 500 zł w pierwszym roku, więc kanał mógłby się opłacać także przy konwersji 1%. Tylko że udowodnienie tego
+wymaga kilku razy większego budżetu i kilku miesięcy. Dlatego test reklam jest torem pobocznym, a nie głównym.
 
 Wdrożenie: `sonda/docs/02-WDROZENIE.md`. Kampania: `sonda/docs/03-REKLAMY.md`.
 
@@ -117,10 +130,12 @@ Wdrożenie: `sonda/docs/02-WDROZENIE.md`. Kampania: `sonda/docs/03-REKLAMY.md`.
 
 | Jeśli… | …to |
 |---|---|
-| Planer pokaże mniej niż 300 wyszukiwań miesięcznie łącznie dla całej listy fraz | Żadnych reklam. Zostaje punkt 2. |
-| Planer pokaże 300–2 000 | Strona jako stały punkt wejścia przy 5–10 zł dziennie, ocena po 90 dniach. |
+| W Planerze wszystkie frazy z grupy „Problem" mają przedział „10–100" albo brak danych | Żadnych reklam. Zostaje punkt 2. |
+| Jedna albo dwie frazy mają „100–1 tys.", żadna więcej | Strona jako stały punkt wejścia przy 5–10 zł dziennie, bez werdyktu; ocena po 90 dniach. |
+| Co najmniej trzy frazy „100–1 tys." albo jedna „1 tys.–10 tys." (reguła R4) | Test reklam ma sens, jeśli przejdzie warunek kosztowy z `sonda/docs/01-BRAMKI.md`. |
+| Budżet testu się skończył, a GO nie ma | Nie dokładasz. Wniosek: kanał za drogi, żeby go uczciwie sprawdzić. Zostaje punkt 2. |
 | Obecny klient kosztuje Cię ponad 1,5 h tygodniowo | Najpierw odchudź obsługę albo podnieś cenę; nie dokładaj klientów. |
-| Po 30 dniach: 0 poleceń i mniej niż 3 odpowiedzi od firm serwisujących ERP | Zmień listę adresatów albo treść; jeszcze nie rezygnuj. |
+| Po 30 dniach (punkt kontrolny): 0 poleceń i mniej niż 3 odpowiedzi od firm serwisujących ERP | Zmień listę adresatów albo treść; jeszcze nie rezygnuj. |
 | Po 90 dniach: 10 firm zapytanych, mniej niż 2 rozmowy, 0 poleceń | Kanał partnerski zamknięty. PLAR Orders zostaje aktywem jednego klienta; w styczniu wróć do notatki o PUP. |
 | Test reklam da GO | Obsłuż firmy ręcznie na istniejącym systemie. Kod samoobsługowy dopiero po 3 płacących pilotażach prowadzonych ręcznie. |
 
@@ -143,3 +158,15 @@ disclosekit miał cztery odpowiedzi po stronie przeciwnej.
 3. Czy cytat z referencji może stać na stronie testowej (potwierdź u klienta).
 4. Czy przenieść `project-2/` do prywatnego repozytorium. To repozytorium jest publiczne: progi, cennik pilotażu
    i ten plik widzi każdy, także klient i konkurencja.
+
+## Źródła liczb użytych w tym pliku
+
+- Mediana przychodu projektów zweryfikowanych przez Stripe (136–169 USD miesięcznie):
+  https://www.indiehackers.com/post/i-analyzed-5-079-stripe-verified-startups-f0f6bd053f ,
+  https://bigideasdb.com/trustmrr-saas-revenue-benchmarks-2026 ,
+  https://bigideasdb.com/state-of-indie-saas-revenue-2026
+- Cennik i fakty o PLAR Orders: https://plar.ai/orders (stan na 2026-11-26).
+- Koszt kliknięcia 13,48 zł: kampania disclosekit z maja 2026 (`../README.md`, tabela wyników kampanii).
+- Pozostałe ustalenia z tabeli „Skąd ten werdykt": `research/03-decision/evidence-digest.md`, każde z linkiem.
+- Prawdopodobieństwa w sekcji o progach to rachunek z rozkładu dwumianowego dla podanej konwersji, a nie dane z rynku.
+  Sama konwersja 1–2% jest założeniem.
