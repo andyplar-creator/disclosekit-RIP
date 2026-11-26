@@ -30,9 +30,11 @@ CREATE TABLE IF NOT EXISTS leads (
   erp TEXT,                              -- program magazynowy / ERP podany w formularzu
   volume TEXT,                           -- ile zamowien tygodniowo (tekst z formularza)
   phone TEXT,
+  note TEXT,                             -- "jak dzis przyjmujecie zamowienia" (pole opcjonalne)
   wants_invoice INTEGER NOT NULL DEFAULT 0,  -- 1 = chce platny pilotaz na fakture pro forma
-  -- Ocena nadawana RECZNIE przez wlasciciela. Tylko 'qualified' i 'data_received' licza sie do werdyktu.
-  status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'qualified', 'data_received', 'disqualified')),
+  -- Ocena nadawana RECZNIE przez wlasciciela. Do werdyktu licza sie tylko: 'qualified', 'data_received', 'paid'.
+  -- 'paid' = firma zaplacila za pilotaz przelewem / na fakture pro forma (poza Stripe).
+  status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'qualified', 'data_received', 'paid', 'disqualified')),
   -- Powod automatycznego oznaczenia jako podejrzane: 'honeypot' (wypelnione ukryte pole) albo 'bot_ua'.
   -- Podejrzane zgloszenia NIE sa kasowane: wlasciciel widzi je w panelu i moze zmienic ocene.
   flag TEXT,
@@ -41,8 +43,9 @@ CREATE TABLE IF NOT EXISTS leads (
   is_ad INTEGER NOT NULL DEFAULT 0,
   utm_campaign TEXT,
   utm_term TEXT,
-  is_test INTEGER NOT NULL DEFAULT 0,    -- 1 = wpis z autotestu panelu, nie liczy sie do lejka
+  is_test INTEGER NOT NULL DEFAULT 0,    -- 1 = wpis wlasciciela (podglad, zalogowany) albo autotestu; nie liczy sie do lejka
   created_at INTEGER NOT NULL,
+  resubmitted_at INTEGER,                -- kiedy ten sam adres wyslal formularz ponownie (dane zostaly uzupelnione)
   UNIQUE (experiment, email)
 );
 CREATE INDEX IF NOT EXISTS idx_leads_exp ON leads (experiment, created_at);
@@ -55,9 +58,14 @@ CREATE TABLE IF NOT EXISTS orders (
   amount_minor INTEGER NOT NULL,         -- kwota brutto w groszach / centach
   currency TEXT NOT NULL,
   email TEXT,
+  company TEXT,                          -- nazwa firmy podana przy platnosci (do faktury)
+  nip TEXT,                              -- NIP podany przy platnosci (do faktury)
   visitor TEXT NOT NULL,
   is_ad INTEGER NOT NULL DEFAULT 0,
   livemode INTEGER NOT NULL DEFAULT 0,   -- 0 = tryb testowy Stripe, 1 = prawdziwe pieniadze
+  -- 1 = nie licz do werdyktu ani przychodu: platnosc wlasciciela, probna albo zwrocona.
+  -- Ustawiane automatycznie dla platnosci zalogowanego wlasciciela; wlasciciel moze to zmienic w panelu.
+  excluded INTEGER NOT NULL DEFAULT 0,
   created_at INTEGER NOT NULL,
   paid_at INTEGER
 );
@@ -73,6 +81,19 @@ CREATE TABLE IF NOT EXISTS ad_reports (
   currency TEXT NOT NULL DEFAULT 'pln',
   created_at INTEGER NOT NULL,
   UNIQUE (experiment, day)
+);
+
+-- Od kiedy liczyc lejek danego eksperymentu. Przycisk "Zacznij liczyc od teraz" w panelu
+-- odcina wszystko, co bylo wczesniej (wlasne proby wlasciciela przed startem kampanii).
+CREATE TABLE IF NOT EXISTS experiment_state (
+  experiment TEXT PRIMARY KEY,
+  counting_since INTEGER NOT NULL
+);
+
+-- Drobne znaczniki stanu, np. czas ostatniego poprawnie podpisanego webhooka Stripe.
+CREATE TABLE IF NOT EXISTS meta (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
 );
 
 -- Limity zapytan. Atomowy UPSERT w D1 (nie KV: KV jest ostatecznie spojne i limit dawalo sie obejsc).

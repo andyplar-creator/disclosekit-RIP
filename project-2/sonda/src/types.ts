@@ -19,6 +19,7 @@ export interface Env {
 
   // Sekrety (wrangler secret put ...)
   ADMIN_TOKEN?: string;
+  NOTIFY_WEBHOOK_URL?: string; // opcjonalnie: adres, na ktory Sonda wysle krotkie powiadomienie o nowym zgloszeniu
   VISITOR_SALT?: string;
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
@@ -41,10 +42,15 @@ export interface Thresholds {
    * Sam adres e-mail nigdy nie liczy sie do werdyktu.
    */
   goQualifiedLeads: number;
+  /**
+   * Przy zakonczeniu testu (maxAdClicks) NO-GO zapada, gdy prawdziwych firm jest najwyzej tyle.
+   * Wiecej firm, ale ponizej progu GO, to wynik nierozstrzygniety.
+   */
+  noGoMaxQualifiedLeads: number;
 }
 
 /** Ocena zgloszenia nadawana recznie przez wlasciciela w panelu. */
-export type LeadStatus = 'new' | 'qualified' | 'data_received' | 'disqualified';
+export type LeadStatus = 'new' | 'qualified' | 'data_received' | 'paid' | 'disqualified';
 
 export interface DemoExample {
   label: string;
@@ -92,6 +98,7 @@ export interface OrderExtraction {
 export interface PreorderConfig {
   title: string;
   body: string;
+  /** Tekst przycisku BEZ kwoty. Kwote dopisuje strona z amountGrossMinor, zeby nie dalo sie ich rozjechac. */
   button: string;
   /** Kwota BRUTTO w groszach / centach, dokladnie tyle pobierze Stripe. */
   amountGrossMinor: number;
@@ -138,6 +145,7 @@ export interface Experiment {
       erpLabel: string;
       volumeLabel: string;
       phoneLabel: string;
+      noteLabel: string;
       /** Pole wyboru "chce platny pilotaz na fakture pro forma" (puste = brak pola). */
       invoiceCheckbox: string;
       /** Co sie stanie po wyslaniu formularza (kazdy punkt to obietnica). */

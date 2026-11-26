@@ -45,12 +45,19 @@ export async function createCheckoutSession(p: CheckoutParams): Promise<Checkout
   form.set('metadata[experiment]', p.experiment);
   form.set('metadata[visitor]', p.visitor);
   form.set('payment_intent_data[metadata][experiment]', p.experiment);
-  // NIP zbieramy jako zwykle pole tekstowe: nie wymaga wlaczonego Stripe Tax.
-  form.set('custom_fields[0][key]', 'nip');
+  // Dane do faktury: strona i regulamin obiecuja fakture "na dane podane przy platnosci",
+  // wiec nazwa firmy, NIP i adres sa OBOWIAZKOWE. Zwykle pola tekstowe nie wymagaja Stripe Tax.
+  form.set('billing_address_collection', 'required');
+  form.set('custom_fields[0][key]', 'company');
   form.set('custom_fields[0][label][type]', 'custom');
-  form.set('custom_fields[0][label][custom]', p.locale === 'pl' ? 'NIP firmy (do faktury)' : 'Company tax ID (for the invoice)');
+  form.set('custom_fields[0][label][custom]', p.locale === 'pl' ? 'Nazwa firmy (do faktury)' : 'Company name (for the invoice)');
   form.set('custom_fields[0][type]', 'text');
-  form.set('custom_fields[0][optional]', 'true');
+  form.set('custom_fields[0][optional]', 'false');
+  form.set('custom_fields[1][key]', 'nip');
+  form.set('custom_fields[1][label][type]', 'custom');
+  form.set('custom_fields[1][label][custom]', p.locale === 'pl' ? 'NIP firmy (do faktury)' : 'Company tax ID (for the invoice)');
+  form.set('custom_fields[1][type]', 'text');
+  form.set('custom_fields[1][optional]', 'false');
 
   const res = await fetch(`${p.apiBase}/v1/checkout/sessions`, {
     method: 'POST',
@@ -80,8 +87,22 @@ export interface StripeEvent {
       payment_status?: string;
       customer_details?: { email?: string | null } | null;
       metadata?: Record<string, string> | null;
+      custom_fields?: { key?: string; text?: { value?: string | null } | null }[] | null;
     };
   };
+}
+
+/** Wartosc pola dodatkowego z sesji Checkout (np. "nip" albo "company"), przycieta do rozsadnej dlugosci. */
+export function customField(event: StripeEvent, key: string): string | null {
+  const fields = event.data.object.custom_fields;
+  if (!Array.isArray(fields)) return null;
+  for (const field of fields) {
+    if (field?.key === key) {
+      const value = field.text?.value;
+      if (typeof value === 'string' && value.trim()) return value.trim().slice(0, 120);
+    }
+  }
+  return null;
 }
 
 export function parseStripeEvent(rawBody: string): StripeEvent | null {

@@ -8,7 +8,7 @@
   // Logi bledow w panelu Cloudflare (darmowy plan)
   "observability": { "enabled": true },
 
-  // Baza D1. Po `npx wrangler d1 create sonda_db` wklej tutaj zwrocony database_id.
+  // Baza D1. Po `npx wrangler d1 create sonda_db --jurisdiction eu` wklej tutaj zwrocony database_id.
   "d1_databases": [
     {
       "binding": "DB",
@@ -22,7 +22,8 @@
   "vars": {
     "SITE_URL": "https://REPLACE_WITH_YOUR_ADDRESS",
     "DEFAULT_EXPERIMENT": "zamowienia-z-maila",
-    // Slugi publicznych eksperymentow, po przecinku. Puste = nic nie jest publiczne (szkice widzisz po zalogowaniu).
+    // Slugi publicznych eksperymentow, po przecinku. Puste = nic nie jest publiczne (strone widzisz tylko Ty, po zalogowaniu).
+    // Zostaw puste az do kroku "upublicznij strone" w docs/02-WDROZENIE.md.
     "LIVE_EXPERIMENTS": "",
     // Slugi eksperymentow z polem "wklej wlasna wiadomosc" (demo na zywo, wymaga ANTHROPIC_API_KEY). Puste = same gotowe przyklady.
     "LIVE_PASTE_EXPERIMENTS": "",
@@ -40,4 +41,6 @@
   //   ANTHROPIC_API_KEY      klucz do demo na zywo                          (opcjonalne)
   //   STRIPE_SECRET_KEY      klucz Stripe                                   (opcjonalne, razem z nastepnym)
   //   STRIPE_WEBHOOK_SECRET  sekret webhooka Stripe                         (opcjonalne, razem z poprzednim)
+  //   NOTIFY_WEBHOOK_URL     adres, na ktory Sonda wysle krotkie powiadomienie o nowym zgloszeniu lub wplacie
+  //                          (opcjonalne; np. webhook Slacka, Discorda albo ntfy.sh; bez danych osobowych w tresci)
 }

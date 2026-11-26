@@ -6,21 +6,37 @@ import { formatMoney } from '../lib/pure';
 
 export type Flash =
   | 'lead_ok'
-  | 'lead_duplicate'
+  | 'lead_updated'
   | 'lead_invalid'
   | 'lead_missing'
   | 'lead_consent'
+  | 'lead_error'
   | 'rate'
   | 'pay_unavailable'
   | 'pay_terms'
   | 'pay_cancelled'
   | null;
 
+/** To, co odwiedzajacy wpisal w formularz: przy bledzie oddajemy strone z tymi samymi danymi. */
+export interface FormValues {
+  email: string;
+  company: string;
+  erp: string;
+  volume: string;
+  nip: string;
+  phone: string;
+  note: string;
+  wantsInvoice: boolean;
+  consent: boolean;
+}
+
 export interface LandingState {
   nonce: string;
   attribution: Attribution;
-  /** Komunikat po przekierowaniu z formularza. */
+  /** Komunikat po wyslaniu formularza. */
   flash: Flash;
+  /** Wartosci do ponownego wypelnienia formularza po bledzie; null = pusty formularz. */
+  form: FormValues | null;
   paymentsEnabled: boolean;
   /** Pole "wklej wlasna wiadomosc" dziala tylko, gdy eksperyment je wlacza i jest klucz API. */
   livePaste: boolean;
@@ -33,8 +49,9 @@ const T = {
     consent: 'Zgadzam się na kontakt w sprawie pilotażu. Administratorem danych jest',
     privacy: 'polityka prywatności',
     hpLabel: 'Zostaw to pole puste',
-    lead_duplicate: 'To zgłoszenie już mam. Nie trzeba wysyłać go drugi raz.',
-    lead_invalid: 'Ten adres e-mail wygląda na niepoprawny. Sprawdź go i spróbuj ponownie.',
+    lead_updated: 'Mam już zgłoszenie z tego adresu, więc uzupełniłem je o nowe dane. Nie trzeba wysyłać go ponownie.',
+    lead_error: 'Nie udało się zapisać zgłoszenia. To błąd po mojej stronie. Spróbuj za chwilę albo napisz bezpośrednio na adres ze stopki.',
+    lead_invalid: 'Ten adres e-mail wygląda na niepoprawny. Sprawdź go i spróbuj ponownie. Reszta formularza została zachowana.',
     lead_missing: 'Uzupełnij nazwę firmy, program magazynowy i liczbę zamówień. Bez tego nie przygotuję sensownej odpowiedzi.',
     lead_consent: 'Zaznacz zgodę na kontakt, inaczej nie mogę przyjąć zgłoszenia.',
     rate: 'Za dużo prób z tego urządzenia. Spróbuj ponownie jutro albo napisz na adres ze stopki.',
@@ -44,6 +61,8 @@ const T = {
     preview: 'PODGLĄD: ten eksperyment nie jest publiczny i widzisz go tylko Ty. Zgłoszenia wysłane stąd są oznaczane jako testowe.',
     message: 'Wiadomość od klienta',
     result: 'Co widzi operator',
+    illustrative: 'Przykłady poglądowe: wiadomości są wymyślone, a wyniki przygotowane ręcznie.',
+    payNeutral: 'Tę stronę widzisz po zakończeniu płatności.',
     customer: 'Klient',
     date: 'Termin',
     address: 'Adres dostawy',
@@ -65,7 +84,7 @@ const T = {
     how: 'Jak to działa',
     next: 'Co się stanie po wysłaniu',
     brutto: 'brutto',
-    terms: 'regulamin przedsprzedaży',
+    terms: 'regulamin płatnego pilotażu',
     empty: '—',
   },
   en: {
@@ -73,8 +92,9 @@ const T = {
     consent: 'I agree to be contacted about the pilot. The data controller is',
     privacy: 'privacy policy',
     hpLabel: 'Leave this field empty',
-    lead_duplicate: 'I already have this request. No need to send it twice.',
-    lead_invalid: 'This e-mail address looks wrong. Please check it and try again.',
+    lead_updated: 'I already had a request from this address, so I added the new details to it.',
+    lead_error: 'The request could not be saved. This is an error on my side. Please try again in a moment or write to the address in the footer.',
+    lead_invalid: 'This e-mail address looks wrong. Please check it and try again. The rest of the form has been kept.',
     lead_missing: 'Please fill in the company name, your warehouse system and the number of orders.',
     lead_consent: 'Please tick the consent box so I can accept your request.',
     rate: 'Too many attempts from this device. Please try again tomorrow.',
@@ -84,6 +104,8 @@ const T = {
     preview: 'PREVIEW: this experiment is not public and only you can see it. Requests sent from here are marked as tests.',
     message: 'Customer message',
     result: 'What the operator sees',
+    illustrative: 'Illustrative examples: the messages are invented and the results were prepared by hand.',
+    payNeutral: 'You see this page after finishing a payment.',
     customer: 'Customer',
     date: 'Date',
     address: 'Delivery address',
@@ -105,7 +127,7 @@ const T = {
     how: 'How it works',
     next: 'What happens after you send it',
     brutto: 'incl. VAT',
-    terms: 'pre-order terms',
+    terms: 'paid pilot terms',
     empty: '—',
   },
 } as const;
@@ -177,6 +199,7 @@ function demoSection(x: Experiment, state: LandingState): string {
 <p class="lede">${e(demo.intro)}</p>
 ${chips}
 ${panels}
+<p class="note">${t.illustrative}</p>
 ${video}
 ${paste}
 </div></section>`;
@@ -186,7 +209,8 @@ function flashMessage(x: Experiment, state: LandingState): string {
   if (!state.flash) return '';
   const t = T[x.locale];
   if (state.flash === 'lead_ok') return `<div class="msg ok" role="status">${e(x.offer.request.success)}</div>`;
-  const kind = state.flash === 'lead_duplicate' || state.flash === 'pay_cancelled' ? 'warn' : 'err';
+  if (state.flash === 'lead_updated') return `<div class="msg ok" role="status">${t.lead_updated}</div>`;
+  const kind = state.flash === 'pay_cancelled' ? 'warn' : 'err';
   return `<div class="msg ${kind}" role="alert">${t[state.flash]}</div>`;
 }
 
@@ -196,10 +220,12 @@ function offerSection(x: Experiment, env: Env, state: LandingState): string {
   const hidden = hiddenAttribution(state.attribution);
   const pilot = x.offer.pilot;
   const showPay = Boolean(pilot && state.paymentsEnabled);
+  const v = state.form;
+  const val = (text: string | undefined) => (text ? ` value="${e(text)}"` : '');
   const priceLines = x.offer.priceLines.map((line) => `<li>${e(line)}</li>`).join('');
   const nextSteps = r.nextSteps.map((step) => `<li>${e(step)}</li>`).join('');
   const invoice = r.invoiceCheckbox
-    ? `<label class="check"><input type="checkbox" name="wants_invoice" value="1"><span>${e(r.invoiceCheckbox)}${
+    ? `<label class="check"><input type="checkbox" name="wants_invoice" value="1"${v?.wantsInvoice ? ' checked' : ''}><span>${e(r.invoiceCheckbox)}${
         pilot ? ` (${e(formatMoney(pilot.amountGrossMinor, pilot.currency, x.locale))} ${t.brutto})` : ''
       }</span></label>`
     : '';
@@ -213,7 +239,7 @@ function offerSection(x: Experiment, env: Env, state: LandingState): string {
 <form method="post" action="/api/${e(x.slug)}/checkout">
 ${hidden}
 <label class="check"><input type="checkbox" name="terms" value="1" required><span>${e(pilot.termsCheckbox)} (<a href="/regulamin?lang=${x.locale}" target="_blank" rel="noopener">${t.terms}</a>)</span></label>
-<button class="btn" type="submit">${e(pilot.button)}</button>
+<button class="btn" type="submit">${e(pilot.button)} — ${e(formatMoney(pilot.amountGrossMinor, pilot.currency, x.locale))} ${t.brutto}</button>
 </form>
 </div>`
       : '';
@@ -229,20 +255,22 @@ ${flashMessage(x, state)}
 <form method="post" action="/api/${e(x.slug)}/lead">
 ${hidden}
 <label for="lead-email">${t.email}</label>
-<input id="lead-email" type="email" name="email" required maxlength="254" autocomplete="email" inputmode="email">
+<input id="lead-email" type="email" name="email" required maxlength="254" autocomplete="email" inputmode="email"${val(v?.email)}>
 <label for="lead-company">${e(r.companyLabel)}</label>
-<input id="lead-company" type="text" name="company" required maxlength="120" autocomplete="organization">
+<input id="lead-company" type="text" name="company" required maxlength="120" autocomplete="organization"${val(v?.company)}>
 <label for="lead-erp">${e(r.erpLabel)}</label>
-<input id="lead-erp" type="text" name="erp" required maxlength="120">
+<input id="lead-erp" type="text" name="erp" required maxlength="120"${val(v?.erp)}>
 <label for="lead-volume">${e(r.volumeLabel)}</label>
-<input id="lead-volume" type="text" name="volume" required maxlength="80" inputmode="numeric">
+<input id="lead-volume" type="text" name="volume" required maxlength="80"${val(v?.volume)}>
+<label for="lead-note">${e(r.noteLabel)}</label>
+<textarea id="lead-note" class="plain" name="note" maxlength="600">${v?.note ? e(v.note) : ''}</textarea>
 <label for="lead-nip">${e(r.nipLabel)}</label>
-<input id="lead-nip" type="text" name="nip" maxlength="20" inputmode="numeric">
+<input id="lead-nip" type="text" name="nip" maxlength="20" inputmode="numeric"${val(v?.nip)}>
 <label for="lead-phone">${e(r.phoneLabel)}</label>
-<input id="lead-phone" type="text" name="phone" maxlength="30" autocomplete="tel" inputmode="tel">
+<input id="lead-phone" type="text" name="phone" maxlength="30" autocomplete="tel" inputmode="tel"${val(v?.phone)}>
 <div class="hp" aria-hidden="true"><label for="lead-website">${t.hpLabel}</label><input id="lead-website" type="text" name="website" tabindex="-1" autocomplete="off"></div>
 ${invoice}
-<label class="check"><input type="checkbox" name="consent" value="1" required><span>${t.consent} ${e(env.COMPANY_NAME)} (<a href="/polityka-prywatnosci?lang=${x.locale}" target="_blank" rel="noopener">${t.privacy}</a>).</span></label>
+<label class="check"><input type="checkbox" name="consent" value="1" required${v?.consent ? ' checked' : ''}><span>${t.consent} ${e(env.COMPANY_NAME)} (<a href="/polityka-prywatnosci?lang=${x.locale}" target="_blank" rel="noopener">${t.privacy}</a>).</span></label>
 <button class="btn" type="submit">${e(r.button)}</button>
 </form>
 <h3 class="gap">${t.next}</h3>
@@ -351,18 +379,25 @@ ${siteFooter(env, x.locale)}`;
   });
 }
 
-export function renderThanks(x: Experiment, env: Env, nonce: string): string {
+export function renderThanks(x: Experiment, env: Env, nonce: string, knownSession: boolean): string {
   const pl = x.locale === 'pl';
+  const t = T[x.locale];
+  const mail = `<a href="mailto:${e(env.CONTACT_EMAIL)}">${e(env.CONTACT_EMAIL)}</a>`;
+  // Potwierdzenie tylko dla sesji platnosci, ktora naprawde u nas powstala. Kazdy inny widzi tekst neutralny.
+  const main = knownSession
+    ? `<h1>${pl ? 'Dziękuję. Płatność przyjęta do realizacji.' : 'Thank you. Your payment is being processed.'}</h1>
+<p class="lede">${
+        pl
+          ? `Odezwę się osobiście w ciągu 2 dni roboczych, żeby ustalić start. Fakturę wystawię na nazwę firmy, NIP i adres podane przy płatności. W razie pytań: `
+          : `I will contact you personally within 2 working days to agree the start. The invoice will be issued to the company name, tax ID and address given at payment. Questions: `
+      }${mail}.</p>
+${x.offer.pilot ? `<p class="note">${e(x.offer.pilot.guarantee)}</p>` : ''}`
+    : `<h1>${pl ? 'Nie widzę tu płatności' : 'No payment found here'}</h1>
+<p class="lede">${t.payNeutral} ${pl ? 'Jeśli właśnie zapłaciłeś i widzisz ten komunikat, napisz na ' : 'If you have just paid and see this message, write to '}${mail}.</p>`;
   const body = `${siteHeader(env)}
 <main><section class="hero"><div class="wrap">
 <div class="eyebrow">${e(x.offer.title)}</div>
-<h1>${pl ? 'Dziękuję. Płatność przyjęta do realizacji.' : 'Thank you. Your payment is being processed.'}</h1>
-<p class="lede">${
-    pl
-      ? `Potwierdzenie przyjdzie ze Stripe na Twój adres e-mail. Odezwę się osobiście w ciągu 2 dni roboczych, żeby ustalić start. Fakturę wystawię na dane podane przy płatności. W razie pytań: `
-      : `Stripe will e-mail you a receipt. I will contact you personally within 2 working days to agree the start. Questions: `
-  }<a href="mailto:${e(env.CONTACT_EMAIL)}">${e(env.CONTACT_EMAIL)}</a>.</p>
-${x.offer.pilot ? `<p class="note">${e(x.offer.pilot.guarantee)}</p>` : ''}
+${main}
 <div class="row"><a class="btn ghost" href="/${e(x.slug)}">${pl ? 'Wróć na stronę' : 'Back to the page'}</a></div>
 </div></section></main>
 ${siteFooter(env, x.locale)}`;

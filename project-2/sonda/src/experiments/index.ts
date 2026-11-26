@@ -49,6 +49,9 @@ export function validateExperiment(experiment: Experiment): string[] {
   if (t.maxAdClicks < t.minAdClicks) problems.push('maxAdClicks jest mniejsze niż minAdClicks');
   if (t.goQualifiedLeads < 1) problems.push('goQualifiedLeads musi wynosić co najmniej 1');
   if (t.goPaidOrders < 0) problems.push('goPaidOrders nie może być ujemne');
+  if (t.noGoMaxQualifiedLeads < 0) problems.push('noGoMaxQualifiedLeads nie może być ujemne');
+  if (t.noGoMaxQualifiedLeads >= t.goQualifiedLeads) problems.push('noGoMaxQualifiedLeads musi być mniejsze niż goQualifiedLeads, inaczej ten sam wynik byłby naraz GO i NO-GO');
+  if (t.maxAdClicks < 150) problems.push('maxAdClicks poniżej 150: NO-GO z tak małej próby zapadałoby zbyt często przez przypadek');
   const pilot = experiment.offer.pilot;
   if (pilot) {
     if (!Number.isInteger(pilot.amountGrossMinor) || pilot.amountGrossMinor < 200) problems.push('kwota pilotażu musi być liczbą całkowitą w groszach, co najmniej 200');

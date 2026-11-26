@@ -18,6 +18,7 @@ h2{font-size:clamp(26px,4vw,34px)}
 h3{font-size:19px}
 p{margin:0 0 1em;color:var(--muted)}
 .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+.wrap.wide{max-width:1360px}
 header.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
 .brand{font:700 20px/1 "Space Grotesk",ui-sans-serif,system-ui,sans-serif;color:var(--text);text-decoration:none;letter-spacing:.02em}
 .brand span{color:var(--accent)}
@@ -43,6 +44,7 @@ ul.plain.no li::before{content:"×";color:var(--bad)}
 label{display:block;font-size:14px;color:var(--muted);margin:14px 0 6px}
 input[type=text],input[type=email],input[type=password],input[type=number],input[type=date],textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);font:400 16px/1.4 inherit;padding:12px 13px}
 textarea{min-height:170px;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px}
+textarea.plain{min-height:84px;font:400 16px/1.4 inherit}
 input:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .check{display:flex;gap:10px;align-items:flex-start;margin:16px 0;font-size:14px;color:var(--muted)}
 .check input{margin-top:4px;width:18px;height:18px;flex:none}
@@ -67,8 +69,12 @@ ol{color:var(--muted);padding-left:20px;margin:0}
 ol li{padding:3px 0}
 select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);font:400 14px/1.3 inherit;padding:7px 9px}
 .btn.small{padding:8px 12px;font-size:14px}
-form.rowform{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-width:150px}
-form.rowform select{max-width:170px}
+form.rowform{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-width:200px}
+form.rowform select{width:100%;max-width:230px}
+td.actions{min-width:230px}
+form.rowform+form.rowform{margin-top:6px}
+label.mini{display:inline-flex;gap:6px;align-items:center;margin:0;font-size:13px;color:var(--muted);font-weight:400}
+label.mini input{width:16px;height:16px;margin:0}
 main h2{margin-top:38px}
 main .wrap>h2:first-child,main .wrap>h1+h2{margin-top:0}
 .tablewrap{margin-bottom:6px}
@@ -170,7 +176,7 @@ export function siteHeader(env: Env): string {
 
 export function siteFooter(env: Env, locale: Locale): string {
   const privacy = locale === 'pl' ? 'Polityka prywatności' : 'Privacy policy';
-  const terms = locale === 'pl' ? 'Regulamin przedsprzedaży' : 'Pre-order terms';
+  const terms = locale === 'pl' ? 'Regulamin płatnego pilotażu' : 'Paid pilot terms';
   const nip = locale === 'pl' ? 'NIP' : 'Tax ID';
   return `<footer><div class="wrap">
 <p>${e(env.COMPANY_NAME)} · ${nip}: ${e(env.COMPANY_NIP)} · ${e(env.COMPANY_CITY)} · <a href="mailto:${e(env.CONTACT_EMAIL)}">${e(env.CONTACT_EMAIL)}</a></p>

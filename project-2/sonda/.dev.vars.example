@@ -11,6 +11,9 @@ SITE_URL=http://localhost:8787
 # Opcjonalne. Bez klucza strona pokazuje gotowy przyklad zamiast demo na zywo.
 # ANTHROPIC_API_KEY=sk-ant-REPLACE_ME
 
-# Opcjonalne, zawsze oba naraz. Bez nich dziala sam zapis na liste (przycisk platnosci jest ukryty).
+# Opcjonalne, zawsze oba naraz. Bez nich dziala formularz zgloszenia z opcja faktury pro forma (przycisk platnosci jest ukryty).
 # STRIPE_SECRET_KEY=sk_test_REPLACE_ME
 # STRIPE_WEBHOOK_SECRET=whsec_REPLACE_ME
+
+# Opcjonalne. Adres, na ktory Sonda wysle krotkie powiadomienie o nowym zgloszeniu lub wplacie.
+# NOTIFY_WEBHOOK_URL=https://REPLACE_ME

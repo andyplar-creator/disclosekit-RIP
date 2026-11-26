@@ -8,9 +8,9 @@
 
 import { EXPERIMENTS, statusOf, validateExperiment } from '../experiments';
 import type { Env } from '../types';
-import { countTestLeads, deleteTestLeads, insertLead, tableExists, timestampRange } from './db';
+import { countTestLeads, deleteProbeLead, getMeta, staleLiveOrders, tableExists, timestampRange, upsertLead } from './db';
 import { DEFAULT_DEMO_MODEL, demoIsConfigured } from './demo-config';
-import { looksLikeUnixSeconds } from './pure';
+import { looksLikeUnixSeconds, siteOrigin } from './pure';
 import { adminIsConfigured } from './session';
 import { isLiveKey } from './stripe';
 
@@ -22,10 +22,10 @@ export interface Check {
   detail: string;
 }
 
-const TABLES = ['events', 'leads', 'orders', 'ad_reports', 'rate_limits'];
+const TABLES = ['events', 'leads', 'orders', 'ad_reports', 'experiment_state', 'meta', 'rate_limits'];
 
 async function mxCheck(email: string): Promise<Check> {
-  const name = 'Adres kontaktowy ma skrzynkę (rekordy MX)';
+  const name = 'Domena adresu kontaktowego przyjmuje pocztę (rekordy MX)';
   const at = email.lastIndexOf('@');
   if (at < 1) return { name, level: 'fail', detail: `CONTACT_EMAIL „${email}” nie jest adresem e-mail.` };
   const domain = email.slice(at + 1);
@@ -76,7 +76,7 @@ export async function runAudit(env: Env, requestUrl: URL, now: number): Promise<
     if (experiment) {
       const probe = `autotest+${now}@sonda.invalid`;
       try {
-        await insertLead(env.DB, {
+        await upsertLead(env.DB, {
           experiment: experiment.slug,
           email: probe,
           company: null,
@@ -84,6 +84,7 @@ export async function runAudit(env: Env, requestUrl: URL, now: number): Promise<
           erp: null,
           volume: null,
           phone: null,
+          note: null,
           wantsInvoice: false,
           flag: null,
           visitor: 'autotest',
@@ -94,14 +95,18 @@ export async function runAudit(env: Env, requestUrl: URL, now: number): Promise<
           now,
         });
         const found = await countTestLeads(env.DB, experiment.slug, probe);
-        await deleteTestLeads(env.DB, experiment.slug);
+        await deleteProbeLead(env.DB, experiment.slug, probe);
         checks.push(
           found === 1
-            ? { name: 'Zapis leada działa od końca do końca', level: 'ok', detail: 'Testowy wpis został zapisany, odczytany i usunięty.' }
-            : { name: 'Zapis leada działa od końca do końca', level: 'fail', detail: 'Testowy wpis nie pojawił się w bazie po zapisie.' },
+            ? {
+                name: 'Zapis zgłoszenia do bazy działa',
+                level: 'ok',
+                detail: 'Wpis próbny został zapisany, odczytany i usunięty. To sprawdza bazę, nie formularz: formularz przejdź sam w oknie incognito (bramka 1).',
+              }
+            : { name: 'Zapis zgłoszenia do bazy działa', level: 'fail', detail: 'Wpis próbny nie pojawił się w bazie po zapisie.' },
         );
       } catch {
-        checks.push({ name: 'Zapis leada działa od końca do końca', level: 'fail', detail: 'Zapis testowego leada zakończył się błędem bazy.' });
+        checks.push({ name: 'Zapis zgłoszenia do bazy działa', level: 'fail', detail: 'Zapis wpisu próbnego zakończył się błędem bazy.' });
       }
     }
 
@@ -150,14 +155,37 @@ export async function runAudit(env: Env, requestUrl: URL, now: number): Promise<
       level: 'fail',
       detail: 'Jest STRIPE_SECRET_KEY, ale brak STRIPE_WEBHOOK_SECRET. Płatności by przechodziły, a panel by ich nie widział.',
     });
-  } else {
+  } else if (!isLiveKey(env.STRIPE_SECRET_KEY)) {
     checks.push({
       name: 'Płatności Stripe',
-      level: isLiveKey(env.STRIPE_SECRET_KEY) ? 'ok' : 'warn',
-      detail: isLiveKey(env.STRIPE_SECRET_KEY)
-        ? 'Klucz produkcyjny: przycisk pobiera prawdziwe pieniądze. Do werdyktu liczą się tylko takie płatności.'
-        : 'Klucz testowy: płatności są na niby i NIE liczą się do werdyktu. Dobre do próby, złe do prawdziwego testu.',
+      level: 'warn',
+      detail: 'Klucz testowy: płatności są na niby i NIE liczą się do werdyktu. Dobre do próby, złe do prawdziwego testu.',
     });
+  } else {
+    // Klucz produkcyjny. Tryb produkcyjny Stripe ma WLASNY adres webhooka i WLASNY sekret podpisu.
+    const tablesOk = missing.length === 0;
+    const lastLive = tablesOk ? await getMeta(env.DB, 'webhook_ok_live') : null;
+    const badSignatures = tablesOk ? Number(await getMeta(env.DB, 'webhook_bad_signature')) || 0 : 0;
+    const stale = tablesOk ? await staleLiveOrders(env.DB, 3600, now) : 0;
+    if (stale > 0) {
+      checks.push({
+        name: 'Płatności Stripe',
+        level: 'fail',
+        detail: `Prawdziwe płatności rozpoczęte ponad godzinę temu i nadal niepotwierdzone: ${stale}. Albo klient przerwał płatność, albo webhook w trybie produkcyjnym nie działa (zły sekret STRIPE_WEBHOOK_SECRET). Sprawdź w panelu Stripe, czy te płatności są opłacone.`,
+      });
+    } else if (!lastLive) {
+      checks.push({
+        name: 'Płatności Stripe',
+        level: 'warn',
+        detail: `Klucz produkcyjny, ale Sonda nie odebrała jeszcze ani jednego poprawnie podpisanego webhooka z trybu produkcyjnego${badSignatures > 0 ? ` (odrzucone podpisy: ${badSignatures})` : ''}. W trybie produkcyjnym Stripe trzeba dodać webhook od nowa i wpisać NOWY sekret. Zrób jedną prawdziwą płatność i sprawdź, czy jej status zmienił się na „opłacona”.`,
+      });
+    } else {
+      checks.push({
+        name: 'Płatności Stripe',
+        level: 'ok',
+        detail: `Klucz produkcyjny, webhook potwierdzony (ostatni poprawny: ${new Date(Number(lastLive) * 1000).toISOString().slice(0, 16).replace('T', ' ')} UTC). Przycisk pobiera prawdziwe pieniądze.`,
+      });
+    }
   }
 
   // 6. Demo
@@ -171,23 +199,23 @@ export async function runAudit(env: Env, requestUrl: URL, now: number): Promise<
       : { name: 'Demo na żywo (ANTHROPIC_API_KEY)', level: 'ok', detail: 'Brak klucza: strona pokazuje gotowe przykłady. To zalecany tryb na pierwszy test.' },
   );
 
-  // 7. Adres strony
-  const expectedHost = (() => {
-    try {
-      return new URL(env.SITE_URL).host;
-    } catch {
-      return null;
-    }
-  })();
-  checks.push(
-    expectedHost === requestUrl.host
-      ? { name: 'Adres strony (SITE_URL)', level: 'ok', detail: `Zgadza się z adresem, pod którym działa panel: ${requestUrl.host}.` }
-      : {
-          name: 'Adres strony (SITE_URL)',
-          level: 'fail',
-          detail: `SITE_URL to „${env.SITE_URL}”, a panel działa pod ${requestUrl.host}. Stripe odsyłałby klientów pod zły adres.`,
-        },
-  );
+  // 7. Adres strony: musi byc dokladnie "protokol + host", bez sciezki i bez ukosnika na koncu.
+  const origin = siteOrigin(env.SITE_URL);
+  if (origin === null || origin !== requestUrl.origin) {
+    checks.push({
+      name: 'Adres strony (SITE_URL)',
+      level: 'fail',
+      detail: `SITE_URL to „${env.SITE_URL}”, a panel działa pod ${requestUrl.origin}. Stripe odsyłałby klientów pod zły adres. Wpisz dokładnie: ${requestUrl.origin}`,
+    });
+  } else if (env.SITE_URL !== origin) {
+    checks.push({
+      name: 'Adres strony (SITE_URL)',
+      level: 'warn',
+      detail: `SITE_URL ma zbędny ukośnik albo ścieżkę na końcu („${env.SITE_URL}”). Sonda sobie z tym radzi, ale wpisz dokładnie: ${origin}`,
+    });
+  } else {
+    checks.push({ name: 'Adres strony (SITE_URL)', level: 'ok', detail: `Zgadza się z adresem, pod którym działa panel: ${origin}.` });
+  }
 
   // 8. Kontakt
   checks.push(await mxCheck(env.CONTACT_EMAIL));

@@ -40,8 +40,10 @@ export function cleanText(value: unknown, maxLength: number): string | null {
   return trimmed.slice(0, maxLength);
 }
 
+// "bot" tylko jako osobne slowo albo z typowym zakonczeniem (Googlebot/2.1, AdsBot-Google, bingbot;):
+// samo wystapienie liter "bot" lapaloby prawdziwe telefony, np. marki CUBOT.
 const BOT_PATTERN =
-  /bot|crawl|spider|slurp|preview|monitor|uptime|headless|lighthouse|pingdom|curl\/|wget\/|python-requests|scrapy|facebookexternalhit|whatsapp|telegram|discord|skypeuripreview|google-inspectiontool|adsbot/i;
+  /bot[\/;)\-]|bot$|\bbot\b|crawler|spider|slurp|headless|lighthouse|pingdom|uptimerobot|curl\/|wget\/|python-requests|scrapy|facebookexternalhit|skypeuripreview|google-inspectiontool/i;
 
 /** Rozpoznaje oczywiste roboty po naglowku User-Agent. Pusty User-Agent tez traktujemy jak robota. */
 export function isBotUserAgent(userAgent: string | null): boolean {
@@ -124,6 +126,30 @@ export async function visitorHash(salt: string, ip: string, userAgent: string, u
   return digest.slice(0, 24);
 }
 
+/**
+ * Klucz do limitow zapytan: zalezy tylko od dnia i adresu IP (bez przegladarki),
+ * zeby limitu nie dalo sie obejsc zmiana naglowka User-Agent. Adres IP nie jest zapisywany.
+ */
+export async function ipDayKey(salt: string, ip: string, unixSeconds: number): Promise<string> {
+  const digest = await hmacSha256Hex(salt, `ip|${dayKey(unixSeconds)}|${ip}`);
+  return digest.slice(0, 24);
+}
+
+/** Wczorajszy dzien w strefie Europe/Warsaw (RRRR-MM-DD): domyslna data wpisu z Google Ads. */
+export function yesterdayInWarsaw(unixSeconds: number): string {
+  const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Warsaw', year: 'numeric', month: '2-digit', day: '2-digit' });
+  return formatter.format(new Date((unixSeconds - 86400) * 1000));
+}
+
+/** Adres strony sprowadzony do samego pochodzenia (protokol + host), bez sciezki i koncowego ukosnika. */
+export function siteOrigin(siteUrl: string): string | null {
+  try {
+    return new URL(siteUrl).origin;
+  } catch {
+    return null;
+  }
+}
+
 /** Sprawdza podpis webhooka Stripe (schemat v1: HMAC-SHA256 z "<czas>.<surowa tresc>"). */
 export async function verifyStripeSignature(
   rawBody: string,
@@ -159,7 +185,7 @@ export function formatMoney(amountMinor: number, currency: string, locale: 'pl' 
 
 /** Zabezpiecza komorke CSV przed wstrzyknieciem formuly do arkusza. */
 export function csvCell(value: string | number | null): string {
-  if (value === null) return '';
+  if (value === null || value === undefined) return '';
   let text = String(value);
   if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
   return `"${text.replace(/"/g, '""')}"`;
